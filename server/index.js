@@ -25,6 +25,26 @@ app.get('/health', (req, res) => {
 
 app.post('/signup', async (req, res) => {
   const { username, email, password, mobile, country,city } = req.body;
+  if(!username){
+    return res.json({
+      success: false,
+      message: 'Username is required'
+    });
+  }
+  if(!email){
+    return res.json({
+      success: false,
+      message: 'Email is required'
+    });
+  }
+  if(!password){
+    return res.json({
+      success: false,
+      message: 'Password is required'
+    });
+  }
+
+  
   const newUser = new User({
     username,
     email,
