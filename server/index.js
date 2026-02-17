@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './db.js';
 import User from './models/User.js';
+import bcrypt from 'bcryptjs';
 
 dotenv.config();
 
@@ -52,10 +53,13 @@ app.post('/signup', async (req, res) => {
     });
   }
 
+  const salt=bcrypt.genSaltSync(10);
+  const encryptedPassword=bcrypt.hashSync(password,salt);
+
   const newUser = new User({
     username,
     email,
-    password,
+    password: encryptedPassword,
     mobile,
     country,
     city
@@ -91,7 +95,7 @@ app.post('/login', async (req, res) => {
       message: 'Password is required'
     });
   }
-  const existingUser = await User.findOne({ email, password }).select('-password');
+  const existingUser = await User.findOne({ email });
   if(!existingUser){
     return res.json({
       success: false,
@@ -99,14 +103,24 @@ app.post('/login', async (req, res) => {
       data: null
     });
   }
-  else{
+
+  const isPasswordValid=bcrypt.compareSync(password,existingUser.password);
+  existingUser.password=undefined;
+
+  if(isPasswordValid){
     return res.json({
       success: true,
       message: 'Login successful',
       data: existingUser
+    });
+  }
+    return res.json({
+      success: false,
+      message: 'Invalid email or password',
+      data: null
   });
  }
-});
+);
 
 
 app.listen(PORT, () => {
