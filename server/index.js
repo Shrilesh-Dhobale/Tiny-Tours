@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './db.js';
 import User from './models/User.js';
+import Tour from './models/Tour.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -135,9 +137,37 @@ app.post('/login', async (req, res) => {
       success: false,
       message: 'Invalid email or password',
       data: null
-  });
- }
+    });
+  }
 );
+
+app.post('/tours',checkJWT, async (req, res) => {
+  const { title, description, cities, startDate, endDate, photos, userID } = req.body;
+
+  const newTour = new Tour({
+    title,
+    description,
+    cities,
+    startDate,
+    endDate,
+    photos,
+    user: userID
+  });
+  try {
+    const savedTour = await newTour.save();
+    return res.json({
+      success: true,
+      message: 'Tour created successfully',
+      data: savedTour
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: `Error creating tour: ${error.message}`,
+      data: null
+    });
+  }
+});
 
 
 app.listen(PORT, () => {

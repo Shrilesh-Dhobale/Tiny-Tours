@@ -35,3 +35,7 @@ const tourSchema = new Schema({
         required: true,
     }
 });
+
+const Tour = model('Tour', tourSchema);
+
+export default Tour;
