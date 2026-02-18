@@ -13,8 +13,11 @@ const tourSchema = new Schema({
         type: [String],
         default: [],
     },
-    duration: {
-        type: Number,
+    startDate: {
+        type: Date,
+    },
+    endDate: {
+        type: Date,
     },
     photos: {
         type: [
