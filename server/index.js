@@ -16,6 +16,23 @@ app.use(cors());
 
 const PORT = process.env.PORT || 8080;
 
+const checkJWT=(req,res,next)=>{
+  const { authorization } = req.headers;
+  const token = authorization && authorization.split(' ')[1];
+
+  try{
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    next();
+  }
+  catch(error){
+    return res.json({
+      success: false,
+      message: 'Invalid token',
+      data: null
+    });
+  }
+};
+
 app.get('/', (req, res) => {
   res.send('Welcome to Tiny Tours API!');
 });
